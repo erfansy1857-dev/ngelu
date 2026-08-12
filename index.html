@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GadgetStore System</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 40px;
+    }
+
+    /* Header Utama */
+    header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    nav {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    /* Kartu Pembatas (Card Container) */
+    .section-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      color: var(--primary);
+    }
+
+    /* Form Styles (Login & Admin) */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-group input, 
+    .form-group textarea, 
+    .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, 
+    .form-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-cancel {
+      background-color: #64748b;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Preview Media */
+    .media-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+      border: 1px dashed var(--border);
+    }
+
+    /* Tabel Kelola Barang (Admin) */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .table-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .btn-action-edit {
+      background-color: #f59e0b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .btn-action-edit:hover {
+      background-color: #d97706;
+    }
+
+    .btn-action-delete {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+      margin-left: 4px;
+    }
+
+    /* Grid Katalog Pelanggan */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 16px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #16a34a;
+      margin-bottom: 8px;
+    }
+
+    .product-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .product-video {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      background-color: #000;
+      max-height: 180px;
+    }
+
+    .btn-buy {
+      display: block;
+      text-align: center;
+      background-color: #16a34a;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+      margin-top: auto;
+    }
+
+    .btn-buy:hover {
+      background-color: #15803d;
+    }
+
+    /* Halaman Tampilan Control */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* Status Order Tracker */
+    .order-status-box {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #eff6ff;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      background-color: #ef4444 !important;
+      border-color: #ef4444 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Utama -->
+  <header>
+    <h1>GadgetStore System</h1>
+    <nav id="mainNav">
+      <button class="nav-btn active" id="btnNavLogin" onclick="switchPage('loginPage')">Halaman Login</button>
+      <button class="nav-btn" id="btnNavCustomer" onclick="switchPage('customerPage')">Katalog Pembeli</button>
+      <button class="nav-btn logout-btn" id="btnNavLogout" onclick="handleLogout()" style="display: none;">Logout Admin</button>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. HALAMAN LOGIN -->
+    <div id="loginPage" class="page active">
+      <div class="section-card" style="max-width: 450px; margin: 40px auto;">
+        <h2 class="section-title" style="text-align: center;">Login Akses Sistem</h2>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="username">Username / Email</label>
+            <input type="text" id="username" placeholder="Masukkan username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Masukkan password" required>
+          </div>
+          <div class="form-group">
+            <label for="role">Masuk Sebagai</label>
+            <select id="role">
+              <option value="customer">Pembeli (Customer)</option>
+              <option value="admin">Administrator (Admin)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit">Masuk ke System</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. HALAMAN PANEL ADMIN -->
+    <div id="adminPage" class="page">
+      
+      <!-- Form Tambah / Edit Produk -->
+      <div class="section-card">
+        <h2 class="section-title" id="formTitle">Panel Administrator - Tambah Produk Baru</h2>
+        <form id="productForm" onsubmit="saveProduct(event)">
+          <input type="hidden" id="editIndex" value="-1">
+          
+          <div class="form-group">
+            <label for="prodName">Nama Produk</label>
+            <input type="text" id="prodName" placeholder="Contoh: Smartphone Premium X" required>
+          </div>
+
+          <div class="form-group">
+            <label for="prodPrice">Harga Produk (Rp)</label>
+            <input type="number" id="prodPrice" placeholder="Contoh: 12000000" required>
+          </div>
+
+          <div class="form-group">
+            <label for="prodDesc">Deskripsi & Spesifikasi Produk</label>
+            <textarea id="prodDesc" rows="4" placeholder="Contoh: Layar 120Hz AMOLED, RAM 12GB, Storage 256GB" required></textarea>
+          </div>
+
+          <!-- Input File Gambar dari Galeri HP -->
+          <div class="form-group">
+            <label for="prodImage">Gambar Produk (Pilih Gambar dari Galeri HP)</label>
+            <input type="file" id="prodImage" accept="image/*" onchange="previewImage(event)">
+            <small id="imgNote" style="color: var(--text-muted); display: block; margin-top: 4px;"></small>
+            <img id="imagePreview" class="media-preview" alt="Preview Gambar">
+          </div>
+
+          <!-- Input File Video dari Galeri HP -->
+          <div class="form-group">
+            <label for="prodVideo">Video Demo Produk (Pilih Video dari Galeri HP)</label>
+            <input type="file" id="prodVideo" accept="video/*" onchange="previewVideo(event)">
+            <small id="vidNote" style="color: var(--text-muted); display: block; margin-top: 4px;"></small>
+            <video id="videoPreview" class="media-preview" controls></video>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btnSubmitForm">Simpan Produk ke Database</button>
+          <button type="button" class="btn-cancel" id="btnCancelEdit" onclick="cancelEdit()">Batal Edit</button>
+        </form>
+      </div>
+
+      <!-- Tabel Daftar Inventaris Barang untuk Akses Edit/Hapus -->
+      <div class="section-card">
+        <h2 class="section-title">Daftar Inventaris & Kelola Produk</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Gambar</th>
+                <th>Nama Produk</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="adminProductTable">
+              <!-- Data produk diisi lewat JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. HALAMAN PANEL PEMBELI (Katalog & Transaksi) -->
+    <div id="customerPage" class="page">
+      <div class="section-card">
+        <h2 class="section-title">Katalog Produk & Transaksi</h2>
+        
+        <!-- Grid Katalog Produk -->
+        <div id="catalogGrid" class="catalog-grid"></div>
+
+        <!-- Tracking Status Pesanan -->
+        <div id="orderStatusContainer" style="margin-top: 30px; display: none;">
+          <h3 style="margin-bottom: 10px;">Status Pesanan Terakhir</h3>
+          <div id="orderStatusBox" class="order-status-box"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let products = [
+      {
+        id: 1,
+        name: "Smartphone Premium",
+        price: 12000000,
+        desc: "Layar 120Hz AMOLED, RAM 12GB, Kamera 108MP, Baterai 5000mAh.",
+        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4"
+      }
+    ];
+
+    let uploadedImageBase64 = "";
+    let uploadedVideoUrl = "";
+    let isAdminLoggedIn = false;
+
+    // Fungsi Navigasi Antar Halaman
+    function switchPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(pageId).classList.add('active');
+
+      if (pageId === 'loginPage') {
+        document.getElementById('btnNavLogin').classList.add('active');
+      } else if (pageId === 'adminPage') {
+        renderAdminTable();
+      } else if (pageId === 'customerPage') {
+        document.getElementById('btnNavCustomer').classList.add('active');
+        renderCatalog();
+      }
+    }
+
+    // Fungsi Login Multi-Role
+    function handleLogin(event) {
+      event.preventDefault();
+      const role = document.getElementById('role').value;
+
+      if (role === 'admin') {
+        isAdminLoggedIn = true;
+        document.getElementById('btnNavLogout').style.display = 'inline-block';
+        alert("Login Berhasil sebagai Administrator. Membuka Panel Admin...");
+        switchPage('adminPage');
+      } else {
+        alert("Login Berhasil sebagai Pembeli.");
+        switchPage('customerPage');
+      }
+    }
+
+    // Fungsi Logout Admin
+    function handleLogout() {
+      isAdminLoggedIn = false;
+      document.getElementById('btnNavLogout').style.display = 'none';
+      cancelEdit();
+      alert("Anda telah keluar dari Panel Admin.");
+      switchPage('loginPage');
+    }
+
+    // Preview Foto dari Galeri HP
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgPreview = document.getElementById('imagePreview');
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = 'block';
+          uploadedImageBase64 = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Preview Video dari Galeri HP
+    function previewVideo(event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadedVideoUrl = URL.createObjectURL(file);
+        const vidPreview = document.getElementById('videoPreview');
+        vidPreview.src = uploadedVideoUrl;
+        vidPreview.style.display = 'block';
+      }
+    }
+
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+    }
+
+    // Simpan Produk (Tambah Baru / Update Edit)
+    function saveProduct(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('prodName').value;
+      const price = parseFloat(document.getElementById('prodPrice').value);
+      const desc = document.getElementById('prodDesc').value;
+      const editIndex = parseInt(document.getElementById('editIndex').value);
+
+      if (editIndex === -1) {
+        // Mode Tambah Produk Baru
+        if (!uploadedImageBase64 || !uploadedVideoUrl) {
+          alert("Harap pilih foto dan video dari galeri HP!");
+          return;
+        }
+
+        const newProduct = {
+          id: Date.now(),
+          name: name,
+          price: price,
+          desc: desc,
+          image: uploadedImageBase64,
+          video: uploadedVideoUrl
+        };
+
+        products.push(newProduct);
+        alert("Produk berhasil ditambahkan!");
+      } else {
+        // Mode Edit Produk
+        products[editIndex].name = name;
+        products[editIndex].price = price;
+        products[editIndex].desc = desc;
+
+        if (uploadedImageBase64 !== "") {
+          products[editIndex].image = uploadedImageBase64;
+        }
+        if (uploadedVideoUrl !== "") {
+          products[editIndex].video = uploadedVideoUrl;
+        }
+
+        alert("Produk berhasil diperbarui!");
+      }
+
+      // Reset Form & Preview
+      cancelEdit();
+      renderAdminTable();
+    }
+
+    // Render Tabel Inventaris Admin
+    function renderAdminTable() {
+      const tbody = document.getElementById('adminProductTable');
+      tbody.innerHTML = "";
+
+      products.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${item.image}" class="table-thumb" alt="thumb"></td>
+          <td><strong>${item.name}</strong></td>
+          <td>${formatRupiah(item.price)}</td>
+          <td>
+            <button class="btn-action-edit" onclick="editProduct(${index})">Edit</button>
+            <button class="btn-action-delete" onclick="deleteProduct(${index})">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Fungsi Memuat Data ke Form untuk Edit
+    function editProduct(index) {
+      const product = products[index];
+      document.getElementById('editIndex').value = index;
+      document.getElementById('prodName').value = product.name;
+      document.getElementById('prodPrice').value = product.price;
+      document.getElementById('prodDesc').value = product.desc;
+
+      document.getElementById('formTitle').innerText = "Panel Administrator - Edit Produk";
+      document.getElementById('btnSubmitForm').innerText = "Update Produk";
+      document.getElementById('btnCancelEdit').style.display = "block";
+
+      // Tampilkan Preview Gambar Saat Ini
+      const imgPreview = document.getElementById('imagePreview');
+      imgPreview.src = product.image;
+      imgPreview.style.display = 'block';
+      document.getElementById('imgNote').innerText = "*Biarkan kosong jika tidak ingin mengubah gambar dari galeri.";
+
+      // Tampilkan Preview Video Saat Ini
+      const vidPreview = document.getElementById('videoPreview');
+      vidPreview.src = product.video;
+      vidPreview.style.display = 'block';
+      document.getElementById('vidNote').innerText = "*Biarkan kosong jika tidak ingin mengubah video dari galeri.";
+
+      uploadedImageBase64 = "";
+      uploadedVideoUrl = "";
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Fungsi Batal Edit
+    function cancelEdit() {
+      document.getElementById('editIndex').value = "-1";
+      document.getElementById('productForm').reset();
+      document.getElementById('formTitle').innerText = "Panel Administrator - Tambah Produk Baru";
+      document.getElementById('btnSubmitForm').innerText = "Simpan Produk ke Database";
+      document.getElementById('btnCancelEdit').style.display = "none";
+
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('videoPreview').style.display = 'none';
+      document.getElementById('imgNote').innerText = "";
+      document.getElementById('vidNote').innerText = "";
+
+      uploadedImageBase64 = "";
+      uploadedVideoUrl = "";
+    }
+
+    // Fungsi Hapus Produk
+    function deleteProduct(index) {
+      if (confirm(`Yakin ingin menghapus ${products[index].name}?`)) {
+        products.splice(index, 1);
+        renderAdminTable();
+      }
+    }
+
+    // Render Katalog Produk ke Panel Pembeli
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = "";
+
+      products.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="product-info">
+            <div class="product-title">${item.name}</div>
+            <div class="product-price">${formatRupiah(item.price)}</div>
+            <div class="product-desc">${item.desc}</div>
+            
+            <video class="product-video" controls>
+              <source src="${item.video}">
+              Browser Anda tidak mendukung tag video.
+            </video>
+
+            <a href="javascript:void(0)" class="btn-buy" onclick="processOrder('${item.name}')">Beli Sekarang</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Fitur Transaksi & Tracking Status Pesanan
+    function processOrder(productName) {
+      const statuses = [
+        "Pesanan belum dibayar",
+        "Pesanan diproses",
+        "Pesanan dikirim",
+        "Pesanan selesai"
+      ];
+
+      let currentStatusIndex = 0;
+      const container = document.getElementById('orderStatusContainer');
+      const box = document.getElementById('orderStatusBox');
+
+      container.style.display = 'block';
+      box.innerHTML = `<strong>Produk:</strong> ${productName}<br><strong>Status:</strong> ${statuses[currentStatusIndex]}`;
+
+      const interval = setInterval(() => {
+        currentStatusIndex++;
+        if (currentStatusIndex < statuses.length) {
+          box.innerHTML = `<strong>Produk:</strong> ${productName}<br><strong>Status:</strong> ${statuses[currentStatusIndex]}`;
+        } else {
+          clearInterval(interval);
+        }
+      }, 2500);
+
+      window.scrollTo({ top: container.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    renderCatalog();
+  </script>
+</body>
+</html>
